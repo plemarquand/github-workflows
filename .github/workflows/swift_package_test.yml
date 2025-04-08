@@ -64,6 +64,10 @@ on:
         type: boolean
         description: "Boolean to enable providing the GITHUB_TOKEN to downstream job."
         default: false
+      post_build_command:
+        type: string
+        description: "Command to run after the build/test step"
+        default: "echo 'Done!'"
 
 jobs:
   linux-build:
@@ -99,6 +103,8 @@ jobs:
         run: ${{ inputs.linux_pre_build_command }}
       - name: Build / Test
         run: ${{ inputs.linux_build_command }} ${{ (contains(matrix.swift_version, 'nightly') && inputs.swift_nightly_flags) || inputs.swift_flags }}
+      - name: Post build
+        run: ${{ inputs.post_build_command }}
 
   windows-build:
     name: Windows (${{ matrix.swift_version }} - ${{ inputs.enable_windows_docker && contains(matrix.swift_version, 'nightly') && 'windows-2019' || 'windows-2022' }})
